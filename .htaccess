@@ -1,0 +1,22 @@
+# Démarrer le moteur de ré-écriture d'URL.
+RewriteEngine on
+# Ne pas rediriger les requêtes vers /assets.
+RewriteRule ^assets/(.*)$ assets/$1 [L]
+# Ne pas rediriger favicon.ico
+RewriteRule ^favicon\.ico$ favicon\.ico [L]
+# Rediriger toutes les requêtes vers le contrôleur frontal.
+RewriteRule ^.*$ index.php
+
+############################
+# Mémo expression régulières 
+############################
+# ^ Début d'expression
+# $ Fin d'expression
+# () Capture d'expression
+# . N'importe quel caractère
+# * Zéro, une ou plusieur répétitions
+# + Une ou plusieurs répétitions
+# ? Zéro ou une répétition
+# \ Echappe un caractère
+# $n Valeur capturée par la n-ième capture d'expression
+# [L] Drapeau Last : arrêt d'exécution (si directive prise en compte)
