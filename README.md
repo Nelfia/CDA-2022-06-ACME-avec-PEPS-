@@ -17,3 +17,4 @@ Fabrication d'un Framework PHP nommé __PEPS__.
  * Création, fabrication et sécurisation des données du fichier contenant les __routes__ (cfg/routes.json)
  * Création du __Router__ de PEPS
  * Création de la classe __RouterException__ qui étend __Exception__
+ * Tests
