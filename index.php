@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use cfg\CfgLocal;
 use peps\core\Autoload;
 use peps\core\AutoloadException;
-use peps\core\CfgException;
+use peps\core\Router;
 
 require './peps/core/Autoload.php';
 
@@ -23,6 +22,6 @@ if(!$serverIP) exit ("Server variable SERVER_ADDR unavailable");
 
 $classe = match ($serverIP) {
     "127.0.0.1", "::1" => \cfg\CfgLocal::init(),
-    "212.17.32.5" => \cfg\CfgFree::init(),
-    default => throw new CfgException("Adresse IP non reconnue.")
+    default => exit("Adresse IP non reconnue.")
 };
+Router::route();

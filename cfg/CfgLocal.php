@@ -26,7 +26,6 @@ final class CfgLocal extends CfgApp {
     public static function init() : void {
         // Initialiser la configuration de la classe parente.
         parent::init();
-        var_dump(self::class);
 
         // Driver PDO de la DB.
         self::register('dbDriver', "mysql");
