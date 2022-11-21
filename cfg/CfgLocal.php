@@ -34,7 +34,7 @@ final class CfgLocal extends CfgApp {
         self::register('dbHost', 'localhost');
 
         // Port de l'hôte de la DB.
-        self::register('dbPort', '3306');
+        self::register('dbPort', 3306);
 
         // Nom de la DB.
         self::register('dbName', 'acme');
