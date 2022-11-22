@@ -7,7 +7,7 @@ namespace peps\core;
 /**
  * Classe 100% statique de configuration par défaut.
  * DOIT être étendue dans l'application par une classe ou plusieurs sous-classes de configuration.
- * Typiquement, une clase de configuration générale de l'application et une sous-classe par serveur
+ * Typiquement, une classe de configuration générale de l'application et une sous-classe par serveur
  */
 class Cfg {
     /**

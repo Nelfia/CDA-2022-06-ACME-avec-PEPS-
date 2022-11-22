@@ -4,45 +4,53 @@ declare(strict_types=1);
 
 namespace entities;
 
-use classes\ConnexionMySQL;
-use classes\Entity;
-use PDO;
+use peps\core\Entity;
 
+/**
+ * Entité Category.
+ * Toutes les propriétés sont initialisées par défaut pour les éventuels formaulaires de saisir.
+ * Chargement en Lazy Loading.
+ * 
+ * @see Entity
+ */
 class Category extends Entity
 {
+    /**
+     * Clé primaire. PK.
+     *
+     * @var integer|null
+     */
     public ?int $idCategory = null;
+    /**
+     * Nom de la catégorie.
+     *
+     * @var string|null
+     */
     public ?string $name = null;
+    /**
+     * Tableau des produits de la catégorie.
+     *
+     * @var array|null
+     */
     protected ?array $products = null;
-
+    /**
+     * Constructeur.
+     *
+     * @param integer|null $idCategory PK(facultatif).
+     */
     public function __construct(?int $idCategory = null) {
         $this->idCategory = $idCategory;
     }
 
-    public static function all(): array {
-        $q = "SELECT * FROM category ORDER BY name";
-        $stmt = ConnexionMySQL::getInstance()->getPDO()->query($q);
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Category::class);
-        return $stmt->fetchAll();
-    }
-
-    public function hydrate(): bool {
-        $q = "SELECT * FROM category WHERE idCategory = :idCategory";
-        $params = [':idCategory' => $this->idCategory];
-        $stmt = ConnexionMySQL::getInstance()->getPDO()->prepare($q);
-        $stmt->execute($params);
-        $stmt->setFetchMode(PDO::FETCH_INTO, $this);
-        return (bool) $stmt->fetch();
-    }
-
-    // Chargement des produits de la catégorie en lazy loading
+    /**
+     * Retourne un tableau des produits (triés par nom) de la catégorie en lazy loading.
+     *
+     * @return array Tableau des produits.
+     */
     public function getProducts(): array {
         if ($this->products === null) {
-            $q = "SELECT * FROM product WHERE idCategory = :idCategory ORDER BY name";
-            $params = [':idCategory' => $this->idCategory];
-            $stmt = ConnexionMySQL::getInstance()->getPDO()->prepare($q);
-            $stmt->execute($params);
-            $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Product::class);
-            $this->products = $stmt->fetchAll();
+            // $q = "SELECT * FROM product WHERE idCategory = :idCategory ORDER BY name";
+            $this->products = Product::findAllBy(['idCategory' => $this->idCategory], ['name' => 'ASC']);
         }
         return $this->products;
     }

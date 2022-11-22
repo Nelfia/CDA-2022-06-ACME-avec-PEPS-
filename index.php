@@ -8,7 +8,6 @@ use peps\core\Cfg;
 use peps\core\DBAL;
 use peps\core\DBALException;
 use peps\core\Router;
-use peps\core\RouterException;
 
 require './peps/core/Autoload.php';
 

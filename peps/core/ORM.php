@@ -11,7 +11,7 @@ use JsonSerializable;
  * Abstraction ORM de la persistance des entités.
  * Indépentante du type de système de stockage.
  * Si une propriété 'trucChose' est inaccessible, la méthode 'getTrucChose()' sera invoquée si elle existe. Sinon, null sera retourné.
- * Implémente JsonSerializable pour préciser les propriétés non PUBLIC à sérialiser. Ici, par défaut, toutes les propriétés.
+ * Implémente JsonSerializable pour préciser les propriétés NON PUBLIC à sérialiser. Ici, par défaut, toutes les propriétés.
  */
 abstract class ORM implements JsonSerializable
 {
@@ -89,10 +89,8 @@ abstract class ORM implements JsonSerializable
         $methodName = "set" . ucfirst($propertyName);
 		// Tenter de l'invoquer.
         try {
-            return $this->$methodName($value);
-        } catch (Error) {
-            return null;
-        }
+            $this->$methodName($value);
+        } catch (Error) {}
 	}
 
 	/**

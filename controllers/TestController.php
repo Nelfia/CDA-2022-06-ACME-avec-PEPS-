@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace controllers;
 
+use entities\Category;
+use entities\Product;
 use entities\Truc;
 use peps\core\DBAL;
 use stdClass;
@@ -26,7 +28,16 @@ final class TestController {
      * @return void
      */
     public static function test() : void {
-        var_dump(Truc::describe());
+        $product = new Product();
+        $product->idCategory = 3;
+        $product->name = 'testPeps';
+        $product->ref = 'TEST PEPS';
+        $product->price = 3.15;
+        $product->persist();
+        var_dump($product);
+        var_dump($product->idProduct);
+        $product->getCategory();
+        var_dump($product);
     }
 }
 
@@ -65,3 +76,22 @@ final class TestController {
 //     ->rollback('TEST')
 //     ->commit();
 // }
+
+// // Afficher le tableau des catégories triées sur leur nom dans l'ordre ASC. (findAllBy())
+// var_dump(Category::findAllBy([], ['name' => 'ASC']));
+// // Afficher le tableau des produits triés sur leur prix dans l'ordre descendant. (findAllBy())
+// var_dump(Product::findAllBy([], ['price' => 'DESC']));
+// // Afficher le produit 5 (findOneBy())
+// var_dump(Product::findOneBy(['idProduct' => 5]));
+// // Créer la catégorie 3, l'hydrater, l'afficher puis charger ses produits et l'afficher à nouveau. (lazy loading de "products").
+// $category = new Category(3);
+// $category->hydrate();
+// var_dump($category);
+// $category->products;
+// var_dump($category);
+// // Créer un nouveau produit et lui donner l'idProduct 3, l'hydrater, l'afficher puis charger sa catégorie et l'afficher à nouveau (lazy loading de catégorie).
+// $product = new Product(99);
+// $product->hydrate();
+// var_dump($product);
+// $product->category;
+// var_dump($product);

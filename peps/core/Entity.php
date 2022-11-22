@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace peps\core;
 
-use Error;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -64,15 +63,41 @@ class Entity extends ORM {
             return false;
         $q = "SELECT * FROM {$tableName} WHERE {$pkName} = :id";
         $params = [':id' => $this->$pkName];
-        DBAL::get()->xeq($q, $params)->into($this);
-        return true;
+        return DBAL::get()->xeq($q, $params)->into($this);
     }
 
     /**
 	 * {@inheritDoc}
 	 */
 	public function persist(): bool {
-        return true;
+
+        // Récupérer la description ORM nécessaire.
+        ['tableName' => $tableName, 'pkName' => $pkName, 'propertiesAndColumns' => $propertiesAndColumns] = static::describe();
+        // Initialiser les éléments de requêtes et le tableau des paramètres.
+        $keys = $values = $params = [];
+        $updateList = "";
+        // Pour chaque champ ORM, construire les éléments de requêtes et les paramètres.
+        foreach($propertiesAndColumns as $property) {
+            // Si la colonne n'est pas la PK.
+            if($property !== $pkName) {
+                $keys[] = $property;
+                $values[$property] = ":{$property}";
+                $params[":{$property}"] = $this->$property;
+                $updateList .= "{$property} = :{$property}, ";
+            }
+        }
+        // Créer les requêtes INSERT ou UPDATE.
+        if($this->$pkName === null) {
+            $keysStr = implode(", ", $keys);
+            $valuesStr = implode(", ", $values);
+            $q = "INSERT INTO {$tableName} ({$keysStr}) VALUES ({$valuesStr})";
+        } else {
+            // Supprimer la dernière virgule.
+            $updateList = substr($updateList, 0, -2);
+            $q = "UPDATE {$tableName} SET {$updateList} WHERE {$pkName} = :{$pkName}";
+        }
+        // Exécuter la requête INSERT ou UPDATE et, si INSERT récupérer la PK auto-incrémentée. Retourner true.
+        return $this->$pkName ? (bool)DBAL::get()->xeq($q, $params) : (bool)$this->$pkName = DBAL::get()->xeq($q, $params)->pk();
     }
 
     /**
@@ -93,13 +118,44 @@ class Entity extends ORM {
 	 * {@inheritDoc}
 	 */
 	public static function findAllBy(array $filters = [], array $sortKeys = [], string $limit = ''): array {
-        return [];
+        // Récupérer la description ORM nécessaire.
+        ['tableName' => $tableName] = static::describe();
+        // Initialiser la requête SQL et ses paramètres.
+        $q = "SELECT * FROM {$tableName}";
+        $params = [];
+        // Si filtres présents... (dans $filters)
+        if($filters) {
+            // Construire la clause WHERE.
+            $q .= " WHERE";
+            foreach($filters as $col => $val) {
+                $q .= " {$col} = :{$col} AND";
+                $params[":{$col}"] = $val;
+            }
+            // Supprimer le dernier AND.
+            $q = substr($q, 0, -4);
+        }
+        // Si les clés de tri présentes...
+        if($sortKeys) {
+            // Construire la clause ORDER BY.
+            $q .= " ORDER BY";
+            foreach($sortKeys as $col => $sortOrder) {
+                $q .= " {$col} {$sortOrder},";
+            }
+            // Supprimer le dernier AND.
+            $q = substr($q, 0, -1);
+            // $q = rtrim($q, ' AND');
+        }
+        // Si limite, ajouter la clause LIMIT.
+        if($limit) 
+            $q .= " LIMIT {$limit}";
+        // Exécuter la requête et retourner le tableau d'instances.
+        return DBAL::get()->xeq($q, $params)->findAll(static::class);
     }
 
     /**
 	 * {@inheritDoc}
 	 */
 	public static function findOneBy(array $filters = []): ?static {
-        return null;
+        return static::findAllBy($filters, [], '1')[0] ?? null;
     }
 }
