@@ -25,7 +25,7 @@ final class Router {
 
     /**
      * Routage initial.
-     * Analyse de la requête du client, détermine la route et invoque la méthode appropriér du contrôleur approprié.
+     * Analyse de la requête du client, détermine la route et invoque la méthode appropriée du contrôleur approprié.
      *
      * @throws RouterException Si erreur.
      * @return void
@@ -39,11 +39,11 @@ final class Router {
         // Charger la table de routage JSON.
         $routesJSON = @file_get_contents(Cfg::get('ROUTES_FILE'));
         // Si fichier introuvable, exception.
-        if(!$routesJSON) throw new RouterException(RouterException::JSON_ROUTES_FILE_UNAVAILABLE);
+        if(!$routesJSON) PEPS::e(new RouterException(RouterException::JSON_ROUTES_FILE_UNAVAILABLE));
         // Décoder le JSON.
         $routes = json_decode($routesJSON);
         if(!$routes) 
-            throw new RouterException(RouterException::JSON_ROUTES_FILE_CORRUPTED);
+            PEPS::e(new RouterException(RouterException::JSON_ROUTES_FILE_CORRUPTED));
         // Parcourir la table de routage.
         foreach($routes as $route) {
             // Utiliser l'expression régulière de l'URI avec un slash final optionnel.
@@ -57,7 +57,7 @@ final class Router {
                 array_shift($matches);
                 // Si clés présentes mais nb de clés différent du nombre de valeurs, exception.
                 if(isset($route->params) && count($matches) !== count($route->params))
-                    throw new RouterException(RouterException::WRONG_PARAMS_ARRAY);
+                    PEPS::e(new RouterException(RouterException::WRONG_PARAMS_ARRAY));
                 // Si paramètres, combiner les noms des paramètres avec les valeurs de l'URI pour obtenur un tableau associatif.
                 $assocParams = $matches ? array_combine($route->params, $matches) : [];
                 // Séparer le nom du contrôleur du nom de la méthode.
@@ -68,7 +68,7 @@ final class Router {
                 try {
                     $controller::$method($assocParams);
                 } catch (Error $e) {
-                    throw new RouterException(RouterException::CONTROLLER_METHOD_FAILED . ' ' . $e->getMessage() . ' Ligne ' . $e->getLine());
+                    PEPS::e($e, RouterException::CONTROLLER_METHOD_FAILED);
                 }
                 // Retourner pour quitter le routage.
                 return;
@@ -90,13 +90,16 @@ final class Router {
         // Transformer chaque clé du tableau associatif en variable.
         // Si conflit avec variables existantes, exception.
         if(extract($assocParams, EXTR_SKIP) < count($assocParams)){
-            throw new RouterException(RouterException::PARAMS_ARRAY_CONTAINS_INVALID_KEY);
+            PEPS::e(new RouterException(RouterException::PARAMS_ARRAY_CONTAINS_INVALID_KEY));
         }
+        // Si mode DEBUG, insérer le tableau des requêtes.
+        if(Cfg::get('EXECUTION_MODE') === ExecutionMode::DEBUG)
+            var_dump(PEPS::getQueries());
         // Insérer la vue.
         try {
             @require Cfg::get('VIEWS_DIR') . '/' . $view;
-        } catch (Error) {
-            throw new RouterException(RouterException::VIEW_NOT_FOUND);
+        } catch (Error $e) {
+            PEPS::e($e, RouterException::VIEW_NOT_FOUND);
         }
         // Arrêter l'exécution.
         exit;
@@ -146,8 +149,8 @@ final class Router {
             header("Content-Disposition-Attachment; filename=". $name);
             // Lire le fichier et l'envoyer vers le client
             readfile($file);
-        } catch (Error) {
-            throw new RouterException(RouterException::UNREACHABLE_FILE);
+        } catch (Error $e) {
+            PEPS::e($e, RouterException::UNREACHABLE_FILE);
         }
         // Arrêter l'exécution.
         exit;

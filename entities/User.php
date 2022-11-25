@@ -3,52 +3,85 @@
 declare(strict_types=1);
 
 namespace entities;
-use classes\ConnexionMySQL;
-use classes\Entity;
-use PDO;
+
+use peps\core\Entity;
 
 class User extends Entity {
+    /**
+     * PK.
+     *
+     * @var integer|null
+     */
     public ?int $idUser = null;
+    /**
+     * Identifiant.
+     *
+     * @var string|null
+     */
     public ?string $log = null;
+    /**
+     * Mot de passe TOUJOURS chiffré.
+     *
+     * @var string|null
+     */
     public ?string $pwd = null;
+    /**
+     * Nom de famille.
+     *
+     * @var string|null
+     */
     public ?string $lastName = null;
+    /**
+     * Prénom.
+     *
+     * @var string|null
+     */
     public ?string $firstName = null;
+    /**
+     * Email.
+     *
+     * @var string|null
+     */
     public ?string $email = null;
-
+    /**
+     * Instance du User logué.
+     * Lazy loading.
+     *
+     * @var self|null
+     */
     private static ?self $loggedUser = null;
 
-    public final const ERROR_LOGIN_FAILED = "Login ou mot de passe invalide.";
-
+    /**
+     * Constructeur.
+     *
+     * @param integer|null $idUser PK.
+     */
     public function __construct(?int $idUser = null) {
         $this->idUser = $idUser;
     }
 
-    public function hydrate(): bool {
-        $q = "SELECT * FROM user WHERE idUser= :idUser";
-        $params = [':idUser' => $this->idUser];
-        $stmt = ConnexionMySQL::getInstance()->getPDO()->prepare($q);
-        $stmt->execute($params);
-        $stmt->setFetchMode(PDO::FETCH_INTO, $this);
-        return (bool)$stmt->fetch();
-    }
-
-    // Tente de loguer $this en session. 
-    // Retourne true ou false selon que le login a réussi ou pas.
+    /**
+     * Tente de loguer $this en session. 
+     * Retourne true ou false selon que le login a réussi ou pas.
+     * 
+     * @param string $pwd Mot de passe clair.
+     * @return boolean Echec ou réussite.
+     */
     public function login(string $pwd) : bool {
         // Par sécurité, liquider l'éventuel ancien idUser
         if(isset($_SESSION['idUser'])) unset($_SESSION['idUser']);
         // Retrouver le user d'après son log - Requête SELECT préparée
-        $q = "SELECT * FROM user WHERE log = :log";
-        $params = [ ':log' => $this->log];
-        $stmt = ConnexionMySQL::getInstance()->getPDO()->prepare($q);
-        $stmt->execute($params);
-        // Récupération de l'enregistrement encapsulé ds mon obget PDOStatement $stmt (Hydrater $this)
-        $stmt->setFetchMode(PDO::FETCH_INTO, $this);
-        // Si user retrouvé et log/pwd corrects, le placer en session et retrouver true
-        if ($stmt->fetch() && password_verify($pwd, $this->pwd)) {
+        $user = User::findOneBy(['log' => $this->log]);
+        if(!$user) return false;
+        // Si log/pwd corrects, hydrater $this, le placer en session et retrouver true.
+        if (password_verify($pwd, $user->pwd)) {
+            // Définir l'idUser et $this syr l'idUser de $user.
+            $this->idUser = $user->idUser;
+            // Hydrater $this.
+            $this->hydrate();
             return (bool)$_SESSION['idUser'] = $this->idUser;
         }
-        // Sinon retourner false
+        // Sinon retourner false.
         return false;             
     }
 

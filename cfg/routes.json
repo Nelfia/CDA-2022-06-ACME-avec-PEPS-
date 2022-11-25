@@ -53,5 +53,20 @@
         "params" : [
             "idProduct"
         ]
+    },    
+    {
+        "verb" : "GET",
+        "uri" : "/user/signin",
+        "method" : "UserController.signin"
+    },    
+    {
+        "verb" : "POST",
+        "uri" : "/user/login",
+        "method" : "UserController.login"
+    },    
+    {
+        "verb" : "GET",
+        "uri" : "/user/logout",
+        "method" : "UserController.logout"
     }
 ]

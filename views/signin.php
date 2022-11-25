@@ -2,42 +2,17 @@
 
 declare(strict_types=1);
 
-use classes\Autoload;
-use entities\User;
+use peps\core\Cfg;
 
-require './classes/Autoload.php';
-// Initialisation de l'autoload
-Autoload::init();
-
-// Ouverture de la session utilisateur
-session_start();
-
-// Créer un user
-$user = new User();
-
-// Initialiser le tableau des erreurs
-$errors = [];
-$submit = filter_input(INPUT_POST, 'submit', FILTER_SANITIZE_SPECIAL_CHARS);
-if($submit) {
-	// Récupérer les données et tenter le login
-	$user->log = filter_input(INPUT_POST, 'log', FILTER_SANITIZE_SPECIAL_CHARS);
-	$pwd = filter_input(INPUT_POST, 'pwd', FILTER_SANITIZE_SPECIAL_CHARS);
-	// Si login 
-	if ($user->login($pwd)) {
-		header('Location:listProducts.php');
-		exit("Redirection: login OK");
-	}
-	$errors[] = User::ERROR_LOGIN_FAILED;
-}
-
-
+$user = $user ?? null;
+$errors = $errors ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
 	<meta charset="UTF-8">
-	<title>ACME</title>
+	<title><?= Cfg::get('appTitle') ?></title>
 	<link rel="stylesheet" href="/assets/css/acme.css" />
 </head>
 
@@ -45,13 +20,13 @@ if($submit) {
 	<header></header>
 	<main>
 		<div class="category">
-			<a href="/listProducts.php">Accueil</a> &gt; Connexion
+			<a href="/">Accueil</a> &gt; Connexion
 		</div>
 		<div class="error"><?= implode('<br/>', $errors ?: []) ?></div>
-		<form name="form1" action="/signin.php" method="POST">
+		<form name="form1" action="/user/login" method="POST">
 			<div class="item">
 				<label>Identifiant</label>
-				<input name="log" value="<?= $user->log ?>" size="10" maxlength="10" />
+				<input name="log" value="<?= $user?->log ?>" size="10" maxlength="10" />
 			</div>
 			<div class="item">
 				<label>Mot de passe</label>

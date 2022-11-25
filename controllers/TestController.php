@@ -6,9 +6,7 @@ namespace controllers;
 
 use entities\Category;
 use entities\Product;
-use entities\Truc;
-use peps\core\DBAL;
-use stdClass;
+use peps\core\Router;
 
 /**
  * Classe 100% statique de test.
@@ -28,16 +26,9 @@ final class TestController {
      * @return void
      */
     public static function test() : void {
-        $product = new Product();
-        $product->idCategory = 3;
-        $product->name = 'testPeps';
-        $product->ref = 'TEST PEPS';
-        $product->price = 3.15;
-        $product->persist();
-        var_dump($product);
-        var_dump($product->idProduct);
-        $product->getCategory();
-        var_dump($product);
+        $category = new Category(2);
+        $category->hydrate();
+        var_dump($category->persist());
     }
 }
 
@@ -95,3 +86,20 @@ final class TestController {
 // var_dump($product);
 // $product->category;
 // var_dump($product);
+
+
+// $product = new Product();
+// $product->idCategory = 3;
+// $product->name = 'testPeps';
+// $product->ref = 'TEST PEPS';
+// $product->price = 3.15;
+// $product->persist();
+// var_dump($product);
+// var_dump($product->idProduct);
+// $product->getCategory();
+// var_dump($product);
+
+// $product = new Product(3);
+// $product->hydrate();
+// $product->category;
+// Router::render('error404.php');
