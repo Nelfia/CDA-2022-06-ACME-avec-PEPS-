@@ -63,6 +63,6 @@ final class UserController {
         // Détruire les variables de session.
         session_destroy();
         // Rediriger
-        Router::redirect('signin.php');
+        Router::redirect('/user/signin');
     }
 }

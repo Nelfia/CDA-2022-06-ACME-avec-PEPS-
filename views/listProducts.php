@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace views;
 
+use entities\User;
 use peps\core\Cfg;
 
 $categories = $categories ?? [];
@@ -18,15 +19,21 @@ $categories = $categories ?? [];
 </head>
 
 <body>
-	<header></header>
+	<?php require 'inc/header.php' ?> 
 	<main>
 		<?php 
 		foreach ($categories as $category) { 
 		?>
 			<div class="category">
+				<?php 
+				if(User::getLoggedUser()){
+				?>
 				<a href="/product/create/<?= $category->idCategory ?>">
 					<img class="ico" src="/assets/img/icons/create.svg" alt="Ajouter un produit dans cette catégorie" />
 				</a>
+				<?php
+				} 
+				?>
 				<?= $category->name ?>
 			</div>
 			<?php $category->products;
@@ -37,12 +44,18 @@ $categories = $categories ?? [];
 						<img class="thumbnail" src=<?= "{$imagePath}"; ?> alt=<?= $product->name ?> />
 						<div class="name"><?= $product->name ?></div>
 					</a>
+					<?php 
+					if(User::getLoggedUser()){
+					?>
 					<a class="ico update" href="/product/update/<?= $product->idProduct?>">
 						<img src="/assets/img/icons/update.svg" alt="Modifier un produit" />
 					</a>
 					<a class="ico delete" href="/product/remove/<?=$product->idProduct ?>">
 						<img src="/assets/img/icons/delete.svg" alt="Supprimer le produit">
 					</a>
+					<?php
+					} 
+					?>
 				</div>
 			<?php 
 		}

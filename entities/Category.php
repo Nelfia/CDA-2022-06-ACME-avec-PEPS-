@@ -8,7 +8,7 @@ use peps\core\Entity;
 
 /**
  * Entité Category.
- * Toutes les propriétés sont initialisées par défaut pour les éventuels formaulaires de saisir.
+ * Toutes les propriétés sont initialisées par défaut pour les éventuels formulaires de saisie.
  * Chargement en Lazy Loading.
  * 
  * @see Entity

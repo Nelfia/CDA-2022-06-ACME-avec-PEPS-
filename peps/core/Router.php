@@ -13,7 +13,7 @@ use Error;
  *      text() :envoyer du text brut (text/plain).
  *      json() : envoyer du JSON (application/json)
  *      download(): envoyer un fichier en flux binaire
- *      redirect(): rediriger côté client 
+ *      redirect(): rediriger côté client
  * Toutes ces méthodes ARRETENT l'éxécution.
  */
 final class Router {
@@ -146,7 +146,7 @@ final class Router {
             header("Content-Type :" . $mimeType);
             header("Content-Transfer-Encoding: binary");
             header("Content-length: " . @filesize($file));
-            header("Content-Disposition-Attachment; filename=". $name);
+            header("Content-Disposition-Attachment; filename={$name}");
             // Lire le fichier et l'envoyer vers le client
             readfile($file);
         } catch (Error $e) {

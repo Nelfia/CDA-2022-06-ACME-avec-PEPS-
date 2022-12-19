@@ -6,6 +6,7 @@ namespace controllers;
 
 use entities\Category;
 use entities\Product;
+use entities\User;
 use Exception;
 use peps\core\Cfg;
 use peps\core\Router;
@@ -67,6 +68,8 @@ final class ProductController {
      * @return void
      */
     public static function create(array $assocParams) : void {
+        // Si utilisateur non logué, rediriger.
+        if(!User::getLoggedUser()) Router::redirect('/user/signin');
         // Créer un produit.
         $product = new Product();
         // Récupérer idCategory et caler le menu déroulant.

@@ -46,6 +46,12 @@ class Cfg {
 
         // Nom de la vue affichant l'erreur 404.
         self::register('ERROR_404_VIEW', 'error404.php');
+        
+        // Nom de la table des sessions en DB.
+        self::register('SESSION_TABLE', 'Session');
+
+        // Longueur du SID.
+        self::register('SID_LENGTH', 32);
     }
 
     /**

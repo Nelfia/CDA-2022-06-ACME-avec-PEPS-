@@ -25,35 +25,30 @@ final class DBAL {
         PDO::ATTR_STRINGIFY_FETCHES => false,
         PDO::ATTR_EMULATE_PREPARES => false
     ];
-
     /**
      * Instance singleton.
      *
      * @var self|null
      */
     private static ?self $instance = null;
-
     /**
      * Instance de PDO.
      *
      * @var PDO|null
      */
     private ?PDO $db = null;
-
     /**
      * Instance de PDOStatement.
      *
      * @var PDOStatement|null
      */
     private ?PDOStatement $stmt = null;
-
     /**
      * Nombre d'enregistrements retrouvés (SELECT) ou affectés (NON SELECT) par la dernière requête
      *
      * @var int|null
      */
     private ?int $nb = null;
-
     /**
      * Constructeur privé.
      */
@@ -112,7 +107,7 @@ final class DBAL {
      *
      * @throws DBALException Si requête ou paramètres incorrects.
      * @param string $q La requête à exécuter.
-     * @param array $params Les potentiels paramètres de la requête.
+     * @param array $params Tableau associatif des paramètres (facultatif).
      * @return static $this pour chaînage.
      */
     public function xeq(string $q, array $params = []) : static {

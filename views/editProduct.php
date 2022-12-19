@@ -19,7 +19,7 @@ $errors = $errors ?? [];
 </head>
 
 <body>
-	<header></header>
+	<?php require 'inc/header.php' ?>
 	<main>
 		<div class="category">
 			<a href="/product/list">Produits</a> &gt; Editer

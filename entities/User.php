@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace entities;
 
 use peps\core\Entity;
+use peps\session\LoggableUser;
 
-class User extends Entity {
+/**
+ * Entité User.
+ * Toutes les propriétés sont initialisées par défaut pour les éventuels formulaires de saisie.
+ * Chargement en Lazy Loading.
+ * 
+ * @see Entity
+ */
+class User extends Entity implements LoggableUser {
     /**
      * PK.
      *
@@ -85,12 +93,19 @@ class User extends Entity {
         return false;             
     }
 
-    // Retourne le user logué ou null si absent
+    /**
+     * Retourne le user logué ou null si absent.
+     * Lazy loading.
+     *
+     * @return self|null User logué ou null si aucun user en session.
+     */
     public static function getLoggedUser() : ?self {
+        // Si $loggedUser non renseigné mais idUser présent en session, créer le user, l'hydrater et le stocker.
         if(!self::$loggedUser && isset($_SESSION['idUser'])) {
             self::$loggedUser = new User($_SESSION['idUser']);
             self::$loggedUser->hydrate();
         }
+        // Sinon, si $loggedUser renseigné, le retourner.
         return self::$loggedUser ?: null;
     }
 }

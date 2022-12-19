@@ -30,7 +30,7 @@ final class CfgLocal extends CfgApp {
         parent::init();
 
         // Mode de fonctionnement.
-        self::register('EXECUTION_MODE', ExecutionMode::DEV, true);
+        // self::register('EXECUTION_MODE', ExecutionMode::DEV, true);
 
         // Driver PDO de la DB.
         self::register('dbDriver', "mysql");

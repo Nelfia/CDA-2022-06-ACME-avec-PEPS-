@@ -6,6 +6,7 @@ use peps\core\Autoload;
 use peps\core\Cfg;
 use peps\core\DBAL;
 use peps\core\Router;
+use peps\session\SessionDB;
 
 require './peps/core/Autoload.php';
 
@@ -34,5 +35,8 @@ DBAL::init(
     Cfg::get('dbCharset')
 );
 
-// Router la requête du client.
+// Initialiser la gestion des sessions en DB (à faire APRES l'initialisation de la connexion DB).
+SessionDB::init(Cfg::get('sessionTimeout'), cfg::get('sessionMode'));
+
+// Router la requête du client (à faire EN DERNIER).
 Router::route();

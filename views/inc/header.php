@@ -12,11 +12,11 @@ use entities\User;
 		if(User::getLoggedUser()) {
 			?>
 			<?= User::getLoggedUser()?->lastName; ?> <?= User::getLoggedUser()->firstName; ?>
-			<a href="/logout.php">Déconnexion</a>
+			<a href="/user/logout">Déconnexion</a>
 		<?php
 		} else {
 		?>
-			<a href="/signin.php">Connexion</a>
+			<a href="/user/signin">Connexion</a>
 		<?php
 		}
 		?>

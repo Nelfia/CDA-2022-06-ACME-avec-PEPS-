@@ -28,7 +28,7 @@ final class TestController {
     public static function test() : void {
         $category = new Category(2);
         $category->hydrate();
-        var_dump($category->persist());
+        // var_dump($category->persist());
     }
 }
 

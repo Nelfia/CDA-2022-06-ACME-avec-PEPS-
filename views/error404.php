@@ -18,7 +18,7 @@ use peps\core\Cfg;
 </head>
 
 <body>
-	<header></header>
+	<?php require 'inc/header.php' ?>
 	<main>
 		<div class="category">
 			<a href="/">Accueil</a> &gt; Oups !

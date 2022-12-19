@@ -16,7 +16,7 @@ use peps\core\Cfg;
 </head>
 
 <body>
-	<header></header>
+	<?php require 'inc/header.php' ?> 
 	<main>
 		<div class="category">
 			<a href="/product/list">Produits</a> &gt; <?= $product->name ?>
