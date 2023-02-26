@@ -35,7 +35,7 @@ class Entity extends ORM {
     protected static function describe() : array {
         // Si describe appelé sur la classe Entity elle-même, exception.
         if(static::class === self::class)
-            throw new EntityException(EntityException::WRONG_USAGE_OF_ENTITY_CLASS_ITSELF);
+            PEPS::e(new EntityException(EntityException::WRONG_USAGE_OF_ENTITY_CLASS_ITSELF));
         // Récupérer le nom court (pas pleinement qualifié), de la classe utilisée donc de la table correspondante.
         $rc = new ReflectionClass(static::class);
         $tableName = $rc->getShortName();
@@ -77,13 +77,13 @@ class Entity extends ORM {
         $keys = $values = $params = [];
         $updateList = "";
         // Pour chaque champ ORM, construire les éléments de requêtes et les paramètres.
-        foreach($propertiesAndColumns as $property) {
+        foreach($propertiesAndColumns as $property => $colums) {
             // Si la colonne n'est pas la PK.
             if($property !== $pkName) {
                 $keys[] = $property;
-                $values[$property] = ":{$property}";
-                $params[":{$property}"] = $this->$property;
-                $updateList .= "{$property} = :{$property}, ";
+                $values[$property] = ":{$colums}";
+                $params[":{$colums}"] = $this->$property;
+                $updateList .= "{$property} = :{$colums}, ";
             }
         }
         // Créer les requêtes INSERT ou UPDATE.
@@ -94,7 +94,7 @@ class Entity extends ORM {
         } else {
             // Supprimer la dernière virgule.
             $updateList = substr($updateList, 0, -2);
-            $q = "UPDATE {$tableName} SET {$updateList} WHERE {$pkName} = :{$pkName}";
+            $q = "UPDATE {$tableName} SET {$updateList} WHERE {$pkName} = {$this->$pkName}";
         }
         // Exécuter la requête INSERT ou UPDATE et, si INSERT récupérer la PK auto-incrémentée. Retourner true.
         return $this->$pkName ? (bool)DBAL::get()->xeq($q, $params) : (bool)$this->$pkName = DBAL::get()->xeq($q, $params)->pk();

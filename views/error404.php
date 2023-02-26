@@ -18,12 +18,12 @@ use peps\core\Cfg;
 </head>
 
 <body>
-	<header></header>
+	<?php require 'inc/header.php' ?>
 	<main>
 		<div class="category">
-			<a href="/listProducts.php">Accueil</a> &gt; Oups !
+			<a href="/">Accueil</a> &gt; Oups !
 		</div>
-		<img src="/test/3" alt="Oups !" />
+		<img src="/assets/img/error404.png" alt="Oups !" />
 	</main>
 	<footer></footer>
 </body>

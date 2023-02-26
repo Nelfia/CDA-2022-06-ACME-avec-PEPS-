@@ -28,7 +28,7 @@ final class Autoload {
         // var_dump($documentRoot);
         // Si introuvable, exception.
         if(!$documentRoot) 
-            throw new AutoloadException(AutoloadException::DOCUMENT_ROOT_UNAVAILABLE);
+            PEPS::e(new AutoloadException(AutoloadException::DOCUMENT_ROOT_UNAVAILABLE));
         // Inscrire la fonction d'autoload dans la pile d'autoload.
         spl_autoload_register(
             fn(string $className) : int => @require strtr(("{$documentRoot}/{$className}.php"),'\\', '/' ));

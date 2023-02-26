@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace peps\core;
 
 use Error;
-use JetBrains\PhpStorm\Internal\ReturnTypeContract;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -26,35 +25,30 @@ final class DBAL {
         PDO::ATTR_STRINGIFY_FETCHES => false,
         PDO::ATTR_EMULATE_PREPARES => false
     ];
-
     /**
      * Instance singleton.
      *
      * @var self|null
      */
     private static ?self $instance = null;
-
     /**
      * Instance de PDO.
      *
      * @var PDO|null
      */
     private ?PDO $db = null;
-
     /**
      * Instance de PDOStatement.
      *
      * @var PDOStatement|null
      */
     private ?PDOStatement $stmt = null;
-
     /**
      * Nombre d'enregistrements retrouvés (SELECT) ou affectés (NON SELECT) par la dernière requête
      *
      * @var int|null
      */
     private ?int $nb = null;
-
     /**
      * Constructeur privé.
      */
@@ -92,8 +86,8 @@ final class DBAL {
         // Créer l'instance de PDO.
         try {
             self::$instance->db = new PDO($dsn, $log, $pwd, self::OPTIONS);
-        } catch (PDOException) {
-            throw new DBALException(DBALException::DB_CONNECTION_FAILED);
+        } catch (PDOException $e) {
+            PEPS::e($e, DBALException::DB_CONNECTION_FAILED);
         } 
     }
 
@@ -113,23 +107,25 @@ final class DBAL {
      *
      * @throws DBALException Si requête ou paramètres incorrects.
      * @param string $q La requête à exécuter.
-     * @param array $params Les potentiels paramètres de la requête.
+     * @param array $params Tableau associatif des paramètres (facultatif).
      * @return static $this pour chaînage.
      */
     public function xeq(string $q, array $params = []) : static {
+        // Journaliser la requête.
+        PEPS::addQuery($q, $params);
         // Si paramètres présents
         if($params) {
             // Préparer la requête
             try {
                 $this->stmt = $this->db->prepare($q);
             } catch (PDOException $e) {
-                throw new DBALException(DBALException::WRONG_PREPARED_SQL_QUERY . ' ' . $e->getMessage());
+                PEPS::e($e, DBALException::WRONG_PREPARED_SQL_QUERY);
             }
             // Exécuter la requête
             try {
                 $this->stmt->execute($params);
             } catch (PDOException $e) {
-                throw new DBALException(DBALException::WRONG_SQL_QUERY_PARAMETERS . ' ' . $e->getMessage());
+                PEPS::e($e, DBALException::WRONG_SQL_QUERY_PARAMETERS);
             }
             // Récupérer le nombre d'enregistrements retrouvés ou affectés.
             $this->nb = $this->stmt->rowCount();
@@ -139,7 +135,7 @@ final class DBAL {
             try {
                 $this->stmt = $this->db->query($q);
             } catch (PDOException $e) {
-                throw new DBALException(DBALException::WRONG_SELECT_SQL_QUERY . ' ' . $e->getMessage());
+                PEPS::e($e, DBALException::WRONG_SELECT_SQL_QUERY);
             }
             // Récupérer le nombre d'enregistrements retrouvés.
             $this->nb = $this->stmt->rowCount();
@@ -149,7 +145,7 @@ final class DBAL {
             try {
                 $this->nb = $this->db->exec($q);
             } catch (PDOException $e) {
-                throw new DBALException(DBALException::WRONG_NON_SELECT_SQL_QUERY . ' ' . $e->getMessage());
+                PEPS::e($e, DBALException::WRONG_NON_SELECT_SQL_QUERY);
             }
             // Par sécurité, RAZ de l'instance PDOStatement $stmt.
             $this->stmt = null;
@@ -181,8 +177,8 @@ final class DBAL {
         // Définir le mode de récupération.
         try {
             $this->stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className);
-        } catch (Error) {
-            throw new DBALException(DBALException::FETCH_CLASS_UNAVAILABLE);
+        } catch (Error $e) {
+            PEPS::e($e, DBALException::FETCH_CLASS_UNAVAILABLE);
         } 
         // Récupérer le jeu d'enregistrements.
         return $this->stmt->fetchAll();
@@ -204,8 +200,8 @@ final class DBAL {
         // Définir le mode de récupération.
         try {
             $this->stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className);
-        } catch (Error) {
-            throw new DBALException(DBALException::FETCH_CLASS_UNAVAILABLE);
+        } catch (Error $e) {
+            PEPS::e($e, DBALException::FETCH_CLASS_UNAVAILABLE);
         } 
         // Récupérer le jeu d'enregistrements.
         return $this->stmt->fetch() ?: null;

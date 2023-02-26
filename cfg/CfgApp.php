@@ -6,6 +6,7 @@ namespace cfg;
 
 use NumberFormatter;
 use peps\core\Cfg;
+use peps\session\SessionMode;
 
 /**
  * Classe 100% statique de configuration générale de l'application.
@@ -41,5 +42,11 @@ class CfgApp extends Cfg {
 
         // Instance de NumberFormatter pour formater un nombre avec 2 décimales selon la locale.
         self::register('appLocale2dec', NumberFormatter::create(self::get('appLocale'), NumberFormatter::PATTERN_DECIMAL, '#,##0.00'));
+
+        // Durée de vie des sessions (secondes).
+        self::register('sessionTimeout', 300); // 5 minutes
+
+        // Mode des sessions (PERSISTENT | HYBRID | ABSOLUTE).
+        self::register('sessionMode', SessionMode::PERSISTENT);
     }
 }

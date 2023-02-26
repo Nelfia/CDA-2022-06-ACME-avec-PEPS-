@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace cfg;
 
+use peps\core\ExecutionMode;
+
 /**
  * Classe 100% statique de configuration de l'application pour le serveur local.
  * FINAL parce que dernier niveau d'héritage.
@@ -26,6 +28,9 @@ final class CfgLocal extends CfgApp {
     public static function init() : void {
         // Initialiser la configuration de la classe parente.
         parent::init();
+
+        // Mode de fonctionnement.
+        // self::register('EXECUTION_MODE', ExecutionMode::DEV, true);
 
         // Driver PDO de la DB.
         self::register('dbDriver', "mysql");

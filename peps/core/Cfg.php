@@ -32,6 +32,9 @@ class Cfg {
      * @return void
      */
     protected static function init() : void {
+        // Mode de fonctionnement par défaut.
+        self::register('EXECUTION_MODE', ExecutionMode::DEV);
+
         // Chemin du fichier JSON des routes depuis la racine de l'application.
         self::register('ROUTES_FILE', 'cfg/routes.json');
 
@@ -43,6 +46,12 @@ class Cfg {
 
         // Nom de la vue affichant l'erreur 404.
         self::register('ERROR_404_VIEW', 'error404.php');
+        
+        // Nom de la table des sessions en DB.
+        self::register('SESSION_TABLE', 'Session');
+
+        // Longueur du SID.
+        self::register('SID_LENGTH', 32);
     }
 
     /**
@@ -50,14 +59,14 @@ class Cfg {
      *
      * @param string $key Clé.
      * @param mixed $val Valeur.
-     * @return boolean True ou False selon que l'inscription a réussi ou non.
+     * @return void
      */
-    protected final static function register(string $key, mixed $val) : bool {
-        // Si la clé existe déjà, ne rien faire et retourner false
-        if(array_key_exists($key, self::$constants)) return false; 
-        // Sinon, ajouter la paire et retourner true
+    protected final static function register(string $key, mixed $val, bool $force = false) : void {
+        // Si la clé existe déjà, et écriture pas forcée, ne rien faire.
+        if(array_key_exists($key, self::$constants) && !$force) 
+            return; 
+        // Sinon, ajouter la paire ou modifier sa valeur si déjà existante.
         self::$constants[$key] = $val;
-        return true;
     }
 
     /**
@@ -70,7 +79,7 @@ class Cfg {
      */
     public final static function get(string $key) : mixed {
         if(array_key_exists($key, self::$constants)) return self::$constants[$key];
-        throw new CfgException(CfgException::UNAVAILABLE_KEY);
+        PEPS::e(new CfgException(CfgException::UNAVAILABLE_KEY));
     }
 
 }
